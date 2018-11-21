@@ -32,7 +32,10 @@ protected:
 private:
     QwtPlot*         m_qwtPlot;
     QwtPlotCurve*    m_curve1;
+    QVector<QPointF> m_curve1_data;
     int              m_timerId;
+
+    void replotAndUpdate();
 
 private slots:
     void updatePlotSize();

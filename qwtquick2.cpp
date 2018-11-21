@@ -1,3 +1,4 @@
+#include "plotdata.h"
 #include "qwtquick2.h"
 
 #include <qwt_plot.h>
@@ -26,10 +27,16 @@ QwtQuick2Plot::~QwtQuick2Plot()
     }
 }
 
+void QwtQuick2Plot::replotAndUpdate()
+{
+    m_qwtPlot->replot();
+    update();
+}
+
 void QwtQuick2Plot::initQwtPlot()
 {
     m_qwtPlot = new QwtPlot();
-    m_qwtPlot->setAutoReplot(true);
+    m_qwtPlot->setAutoReplot(false);
     m_qwtPlot->setStyleSheet("background: white");
 
     updatePlotSize();
@@ -39,12 +46,7 @@ void QwtQuick2Plot::initQwtPlot()
     m_curve1->setPen(QPen(Qt::red));
     m_curve1->setStyle(QwtPlotCurve::Lines);
 
-    QVector<QPointF> v;
-    v.append(QPointF(1.0, 2.0));
-    v.append(QPointF(2.0, 4.4));
-    v.append(QPointF(2.5, 8.4));
-    v.append(QPointF(4.5, 10.0));
-    m_curve1->setSamples(v);
+    m_curve1->setData(new PlotData(&m_curve1_data));
 
     m_qwtPlot->setAxisTitle( m_qwtPlot->xBottom, tr("t") );
     m_qwtPlot->setAxisTitle( m_qwtPlot->yLeft, tr("S" ) );
@@ -53,7 +55,7 @@ void QwtQuick2Plot::initQwtPlot()
 
     startTimer(500);
 
-    m_qwtPlot->replot();
+    replotAndUpdate();
 }
 
 
@@ -103,16 +105,11 @@ void QwtQuick2Plot::timerEvent(QTimerEvent* /*event*/)
     static double t, U;
     U = (static_cast<double>(qrand()) / RAND_MAX) * 5;
 
-    // TODO: impl
-    /*
-    QVector<QPointF> v;
-    v.append(QPointF(t, U));
-    m_curve1->setSamples(v);
-    */
+    m_curve1_data.append(QPointF(t, U));
 
     qDebug() << Q_FUNC_INFO << QString("Adding dot t = %1, S = %2").arg(t).arg(U);
     t++;
-    m_qwtPlot->replot();
+    replotAndUpdate();
 }
 
 void QwtQuick2Plot::routeMouseEvents( QMouseEvent* event )
