@@ -36,7 +36,7 @@ void QwtQuick2Plot::replotAndUpdate()
 void QwtQuick2Plot::initQwtPlot()
 {
     m_qwtPlot = new QwtPlot();
-    // after replot() we need to call update() - so auto replot
+    // after replot() we need to call update() - so disable auto replot
     m_qwtPlot->setAutoReplot(false);
     m_qwtPlot->setStyleSheet("background: white");
 
@@ -51,7 +51,7 @@ void QwtQuick2Plot::initQwtPlot()
     m_curve1->setData(new PlotData(&m_curve1_data));
 
     m_qwtPlot->setAxisTitle(m_qwtPlot->xBottom, tr("t"));
-    m_qwtPlot->setAxisTitle(m_qwtPlot->yLeft, tr("S" ));
+    m_qwtPlot->setAxisTitle(m_qwtPlot->yLeft, tr("S"));
 
     m_curve1->attach(m_qwtPlot);
 
