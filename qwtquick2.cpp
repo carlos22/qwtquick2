@@ -46,6 +46,7 @@ void QwtQuick2Plot::initQwtPlot()
 
     m_curve1->setPen(QPen(Qt::red));
     m_curve1->setStyle(QwtPlotCurve::Lines);
+    m_curve1->setRenderHint(QwtPlotItem::RenderAntialiased);
 
     m_curve1->setData(new PlotData(&m_curve1_data));
 
