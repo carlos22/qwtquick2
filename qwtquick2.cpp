@@ -2,19 +2,19 @@
 #include "qwtquick2.h"
 
 #include <qwt_plot.h>
-
-#include <QDebug>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_renderer.h>
 
-QwtQuick2Plot::QwtQuick2Plot( QQuickItem* parent ) : QQuickPaintedItem( parent )
-    , m_qwtPlot( nullptr ), m_timerId( 0 )
-{
-    setFlag( QQuickItem::ItemHasContents, true );
-    setAcceptedMouseButtons( Qt::AllButtons );
+#include <QDebug>
 
-    connect( this, &QQuickPaintedItem::widthChanged, this, &QwtQuick2Plot::updatePlotSize );
-    connect( this, &QQuickPaintedItem::heightChanged, this, &QwtQuick2Plot::updatePlotSize );
+QwtQuick2Plot::QwtQuick2Plot(QQuickItem* parent) : QQuickPaintedItem(parent)
+    , m_qwtPlot(nullptr), m_timerId(0)
+{
+    setFlag(QQuickItem::ItemHasContents, true);
+    setAcceptedMouseButtons(Qt::AllButtons);
+
+    connect(this, &QQuickPaintedItem::widthChanged, this, &QwtQuick2Plot::updatePlotSize);
+    connect(this, &QQuickPaintedItem::heightChanged, this, &QwtQuick2Plot::updatePlotSize);
 }
 
 QwtQuick2Plot::~QwtQuick2Plot()
@@ -22,7 +22,7 @@ QwtQuick2Plot::~QwtQuick2Plot()
     delete m_qwtPlot;
     m_qwtPlot = nullptr;
 
-    if(m_timerId != 0) {
+    if (m_timerId != 0) {
         killTimer(m_timerId);
     }
 }
@@ -36,6 +36,7 @@ void QwtQuick2Plot::replotAndUpdate()
 void QwtQuick2Plot::initQwtPlot()
 {
     m_qwtPlot = new QwtPlot();
+    // after replot() we need to call update() - so auto replot
     m_qwtPlot->setAutoReplot(false);
     m_qwtPlot->setStyleSheet("background: white");
 
@@ -48,8 +49,8 @@ void QwtQuick2Plot::initQwtPlot()
 
     m_curve1->setData(new PlotData(&m_curve1_data));
 
-    m_qwtPlot->setAxisTitle( m_qwtPlot->xBottom, tr("t") );
-    m_qwtPlot->setAxisTitle( m_qwtPlot->yLeft, tr("S" ) );
+    m_qwtPlot->setAxisTitle(m_qwtPlot->xBottom, tr("t"));
+    m_qwtPlot->setAxisTitle(m_qwtPlot->yLeft, tr("S" ));
 
     m_curve1->attach(m_qwtPlot);
 
@@ -59,45 +60,44 @@ void QwtQuick2Plot::initQwtPlot()
 }
 
 
-void QwtQuick2Plot::paint( QPainter* painter )
+void QwtQuick2Plot::paint(QPainter* painter)
 {
-    if (m_qwtPlot)
-    {
-        QPixmap    picture( boundingRect().size().toSize() );
+    if (m_qwtPlot) {
+        QPixmap picture(boundingRect().size().toSize());
 
         QwtPlotRenderer renderer;
         renderer.renderTo(m_qwtPlot, picture);
 
-        painter->drawPixmap( QPoint(), picture );
+        painter->drawPixmap(QPoint(), picture);
     }
 }
 
-void QwtQuick2Plot::mousePressEvent( QMouseEvent* event )
+void QwtQuick2Plot::mousePressEvent(QMouseEvent* event)
 {
     qDebug() << Q_FUNC_INFO;
-    routeMouseEvents( event );
+    routeMouseEvents(event);
 }
 
-void QwtQuick2Plot::mouseReleaseEvent( QMouseEvent* event )
+void QwtQuick2Plot::mouseReleaseEvent(QMouseEvent* event)
 {
     qDebug() << Q_FUNC_INFO;
-    routeMouseEvents( event );
+    routeMouseEvents(event);
 }
 
-void QwtQuick2Plot::mouseMoveEvent( QMouseEvent* event )
+void QwtQuick2Plot::mouseMoveEvent(QMouseEvent* event)
 {
-    routeMouseEvents( event );
+    routeMouseEvents(event);
 }
 
-void QwtQuick2Plot::mouseDoubleClickEvent( QMouseEvent* event )
+void QwtQuick2Plot::mouseDoubleClickEvent(QMouseEvent* event)
 {
     qDebug() << Q_FUNC_INFO;
-    routeMouseEvents( event );
+    routeMouseEvents(event);
 }
 
-void QwtQuick2Plot::wheelEvent( QWheelEvent* event )
+void QwtQuick2Plot::wheelEvent(QWheelEvent* event)
 {
-    routeWheelEvents( event );
+    routeWheelEvents(event);
 }
 
 void QwtQuick2Plot::timerEvent(QTimerEvent* /*event*/)
@@ -112,21 +112,23 @@ void QwtQuick2Plot::timerEvent(QTimerEvent* /*event*/)
     replotAndUpdate();
 }
 
-void QwtQuick2Plot::routeMouseEvents( QMouseEvent* event )
+void QwtQuick2Plot::routeMouseEvents(QMouseEvent* event)
 {
-    if (m_qwtPlot)
-    {
-        QMouseEvent* newEvent = new QMouseEvent( event->type(), event->localPos(), event->button(), event->buttons(), event->modifiers() );
-        QCoreApplication::postEvent( m_qwtPlot, newEvent );
+    if (m_qwtPlot) {
+        QMouseEvent* newEvent = new QMouseEvent(event->type(), event->localPos(),
+                                                event->button(), event->buttons(),
+                                                event->modifiers());
+        QCoreApplication::postEvent(m_qwtPlot, newEvent);
     }
 }
 
-void QwtQuick2Plot::routeWheelEvents( QWheelEvent* event )
+void QwtQuick2Plot::routeWheelEvents(QWheelEvent* event)
 {
-    if (m_qwtPlot)
-    {
-        QWheelEvent* newEvent = new QWheelEvent( event->pos(), event->delta(), event->buttons(), event->modifiers(), event->orientation() );
-        QCoreApplication::postEvent( m_qwtPlot, newEvent );
+    if (m_qwtPlot) {
+        QWheelEvent* newEvent = new QWheelEvent(event->pos(), event->delta(),
+                                                event->buttons(), event->modifiers(),
+                                                event->orientation());
+        QCoreApplication::postEvent(m_qwtPlot, newEvent);
     }
 }
 
